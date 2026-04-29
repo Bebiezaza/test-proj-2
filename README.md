@@ -1,58 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SMCU MedCamp Registration System
+Built on [Laravel](https://laravel.com/) framework, with [Materialize](https://materializecss.com/) front-end framework, currently powered by PHP 7 with Laravel 8
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Features
+- One-stop service for students looking to join MedCamp to register, do quiz, see "admission" result, accepting or denying the offer, and payment slip attachment 
+- Staffs can download registration form information anytime
 
-## About Laravel
+## Local Installation
+### Prerequisites
+1. PHP Knowledge
+   - PHP (currently preferably PHP 7 as PHP 8 had some problems during last test run), can be downloaded from https://www.php.net/
+2. mySQL Knowledge
+   - Find a way to run your own mySQL database on your computer.
+3. Composer, a PHP package manager, can be downloaded from https://getcomposer.org/
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Steps
+1. Do a git pull.
+2. Rename `.env.example` to just `.env`
+3. Inside .env file, change `DB_DATABASE` `DB_USERNAME` and `DB_PASSWORD` to match environment's credentials. The <ins>**empty**</ins> database <ins>**has**</ins> to be created by the user. Collation is "utf8mb4_unicode_ci".
+4. Run `composer install`
+5. Start local database, then run `php artisan migrate` to create tables for the database for use with MedCamp Registration System.
+6. Run `php artisan key:generate`
+7. For each time local dev site needs to be started:
+   - Start local database.
+   - Run `php artisan serve --port=80` to start hosting a local dev site.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### If localhost login does not work
+https://stackoverflow.com/questions/28635295/laravel-socialite-testing-on-localhost-ssl-certificate-issue
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Required Maintenance
+This section doesn't include updating the website on docchula-server. For instructions on the server, see "Required Maintenance on Remote Server" section below.
 
-## Learning Laravel
+### Frontend
+- The website interface where users can see and interact are hosted inside `resources/views` folder. To edit, such as updating information for each new camp year, navigate to the folder and edit the blade templates.
+- Data privacy notice page, personnel on display as data aggregatpr is the head of registration division (เฮดฝ่ายรับสมัคร)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Quiz
+- Quiz are written and stored inside the `quiz` table in the database.
+- Examples of previous years' quiz TBD
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend, Database
+- Upon changing database layouts, "database migration files" have to be updated. They are stored inside `database/migrations` folder. Tables can be automatically updated by deleting the insulting table and deleting migration info with matching filename on `migrations` table. Then, run `php artisan migrate` again.
+- Some pages have additional data validation upon form submission, see older commits for examples on how to edit them[^1][^2].
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Data Privacy Form Approvals
+- **ชื่อเรื่องแบบสอบถาม:** รับสมัครนักเรียนมัธยมศึกษาตอนปลายเข้าร่วมกิจกรรมค่ายอยากเป็นหมอครั้งที่ ...
+- **ประเภทของแบบสอบถาม:** แบบสอบถามภายนอก
+- **Link:** https://medcamp.docchula.com/
+- **ช่องทางการติดต่อ:** mdcumedcamp@docchula.com
+- **คำอธิบายแบบสอบถาม:** *copies https://medcamp.docchula.com/accept-data-privacy
+- **ชั้นปีที่:** 5
 
-## Agentic Development
+## Required Maintenance on Remote Server (on docchula-server)
+This section should include all the steps from getting on the server to finishing the deployment.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+When on docchula-server, use sudo with git to bypass dubious ownership
 
-```bash
-composer require laravel/boost --dev
+*Items inside `<brackets>` should (must) be changed to appropriate values
 
-php artisan boost:install
-```
+### Prerequisites (cloning with SSH keys)
+1. Get docchula-server SSH credential to login to the server from IT division administrators, or contact IT division administrators for help in maintaining instead.
+2. Get into "www-data" usergroup by `sudo usermod -a -G www-data <your username>`
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Github SSH Credential Generation and Site Updating
+1. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+2. https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
+3. Go to `/sites/MedCamp`
+4. Do a git pull.
 
-## Contributing
+### Or just using https
+1. read https://docs.github.com/en/get-started/git-basics/about-remote-repositories#cloning-with-https-urls
+2. https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### SQL
+1. `mysqldump -u medcamp -p medcamp > <dump name.sql>`
+2. Login to mysql with credentials insided .env file on the server. (`mysql -u medcamp -p`)
+3. Get into the database. (`USE medcamp;`)
+4. Drop all tables, but do not delete the database. (`DROP TABLE <table>;`)
+5. Use `exit` to logout of mysql system.
+6. Delete the insides of folder /sites/MedCamp/storage/app/public (.gitignore file may need to be recreated) 
+   - `rm -rv /sites/MedCamp/storage/app/public`
+   - then `mkdir /sites/MedCamp/storage/app/public`
+   - then `nano /sites/MedCamp/storage/app/public/.gitignore` then write the file to match [.gitignore inside this repository](storage/app/public/.gitignore)
+   - then `sudo chown -R <ownername>:www-data *` and maybe `sudo chmod -R g+rwx *`
+7. Move database dump from step 1 to somewhere else secure.
+8. Run `php artisan migrate` to recreate the tables inside the database.
+9. Repeat steps 2 and 3.
+10. Use `source <quiz file.sql>` to import exam questions.
+11. Repeat step 5.
+12. Verify integrity at https://medcamp.docchula.com/,
+    - Use https://medcamp.docchula.com/instruction to bypass login screen to verify integrity inside the website, with `DENY_NEW_REGISTER=false` inside .env
